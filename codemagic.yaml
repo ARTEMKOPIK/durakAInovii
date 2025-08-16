@@ -1,0 +1,17 @@
+workflows:
+  ios-workflow:
+    name: Build iOS App
+    environment:
+      xcode: latest
+    scripts:
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --project "DurakAI.xcodeproj" \
+            --scheme "DurakAI"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - your@email.com
