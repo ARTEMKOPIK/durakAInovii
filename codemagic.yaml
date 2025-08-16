@@ -4,13 +4,27 @@ workflows:
     environment:
       xcode: latest
     scripts:
-      - name: Build ipa
+      - name: Install dependencies
         script: |
-          xcode-project build-ipa \
-            --project "DurakAI.xcodeproj" \
-            --scheme "DurakAI"
+          pod install --repo-update || true
+      - name: Build app
+        script: |
+          xcodebuild \
+            -project "DurakAI.xcodeproj" \
+            -scheme "DurakAI" \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath $CM_BUILD_DIR/Build/DurakAI.xcarchive \
+            archive
+      - name: Export ipa
+        script: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath $CM_BUILD_DIR/Build/DurakAI.xcarchive \
+            -exportPath $CM_BUILD_DIR/Build/ipa \
+            -exportOptionsPlist /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/Library/Xcode/Specifications/ExportOptions.plist
     artifacts:
-      - build/ios/ipa/*.ipa
+      - $CM_BUILD_DIR/Build/ipa/*.ipa
     publishing:
       email:
         recipients:
